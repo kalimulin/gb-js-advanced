@@ -91,7 +91,7 @@ function renderAllReviews(radio) {
 
 let globalId = 4;
 
-const makeReviewButton = document.querySelector('.button');
+const makeReviewButton = document.querySelector('.btn');
 makeReviewButton.addEventListener("click", (event) => {
   event.preventDefault();
 
