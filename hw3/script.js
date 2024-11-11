@@ -1,28 +1,54 @@
 const reviewForm = document.getElementById("review-form")
 const reviewsEl = document.getElementById('reviews')
+const productList = document.getElementById('product-list')
+const productReviews = document.getElementById('product-reviews')
 
 const displayProductList = () => {
-  reviewsEl.innerHTML = ""
+  productList.innerHTML = ""
+
+  const reviews = JSON.parse(localStorage.getItem("reviews")) || [];
+
+  const products = [...new Set(reviews.map((review) => review.product))]
+
+  products.forEach((product) => {
+    const productElement = document.createElement("div")
+    productElement.classList.add("nav-link")
+    productElement.innerHTML = `<button class="nav-link" type="button" role="tab">${product}</button>`
+
+    productElement.addEventListener('click', () => {
+      displayReviews(product, productReviews)
+    })
+
+    productList.appendChild(productElement);
+  })
+}
+
+const displayReviews = (product, container) => {
+  productReviews.innerHTML = ""
 
   const reviews = JSON.parse(localStorage.getItem("reviews")) || []
 
-  reviews.forEach(review => {
-    const reviewEl = document.createElement('div')
-    reviewEl.classList.add('card')
-    reviewEl.innerHTML = `<div class="card-body">
+  const filteredReviews = reviews.filter((review) => review.product === product)
+
+  filteredReviews.forEach(review => {
+    const reviewElement = document.createElement("div")
+
+    reviewElement.classList.add('card')
+    reviewElement.innerHTML = `<div class="card-body">
       <h5 class="card-title">${review.product}</h5>
       <p class="card-text">${review.text}</p>
       <a href="#" class="card-link">Удалить</a>
     </div>`
 
-    const deleteButton = reviewEl.querySelector('.card-link')
+    const deleteButton = reviewElement.querySelector('.card-link')
 
-    deleteButton.addEventListener("click", function () {
+    deleteButton.addEventListener("click", () => {
       deleteReview(review)
       displayProductList()
+      displayReviews(review.product, productReviews)
     })
 
-    reviewsEl.appendChild(reviewEl)
+    container.appendChild(reviewElement)
   })
 }
 
@@ -61,6 +87,7 @@ reviewForm.addEventListener("submit", function (event) {
   document.getElementById("review-text").value = ""
 
   displayProductList()
+  displayReviews(review.product, productReviews)
 })
 
 displayProductList()
